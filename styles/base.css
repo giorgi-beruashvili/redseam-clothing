@@ -1,105 +1,177 @@
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 html,
-body {
+body,
+#app {
   height: 100%;
 }
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  color: #111;
-  background: #f6f7f9;
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
+    Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji",
+    "Segoe UI Emoji";
+  font-size: 16px;
+  line-height: 1.5;
+  color: #0f172a;
+  background: #fff;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+:root {
+  --container-max: 1920px;
+  --border: #e5e7eb;
+  --muted: #6b7280;
 }
 
 .content-1920 {
   width: 1920px;
   min-height: 1080px;
   margin: 0 auto;
-  background: #fff;
-  display: grid;
-  grid-template-rows: auto 1fr;
-  border: 1px solid #e5e7eb;
 }
 
 .view-root {
   padding: 24px;
+  min-height: calc(1080px - 72px);
 }
 
-.cart-sidebar {
-  position: fixed;
-  top: 0;
-  right: -420px;
-  width: 420px;
-  height: 100vh;
-  background: #fff;
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
-  transition: right 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  z-index: 30;
-}
-.cart-sidebar.open {
-  right: 0;
-}
-
-.cart-header,
-.cart-footer {
-  padding: 16px 20px;
-  border-bottom: 1px solid #eee;
-}
-.cart-footer {
-  border-top: 1px solid #eee;
-  border-bottom: 0;
-  margin-top: auto;
-}
-
-.cart-content {
-  padding: 16px 20px;
-  overflow: auto;
-}
-
-.icon-btn {
-  border: 0;
-  background: transparent;
-  font-size: 18px;
-  cursor: pointer;
+[hidden] {
+  display: none !important;
 }
 
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.25);
-  z-index: 20;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.cart-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 420px;
+  max-width: 100%;
+  background: #fff;
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.08);
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+.cart-sidebar[aria-hidden="false"] {
+  transform: translateX(0);
+}
+
+.cart-header,
+.cart-footer,
+.cart-summary {
+  padding: 16px 20px;
+}
+
+.cart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.cart-title {
+  font-size: 18px;
+  margin: 0;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.cart-content {
+  padding: 16px 20px;
+  overflow: auto;
+  flex: 1 1 auto;
 }
 
 .cart-empty {
-  padding: 24px;
-  text-align: center;
-  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  padding: 12px 0;
 }
 
-.cart-btn,
-.go-checkout {
-  padding: 10px 14px;
-  border: 1px solid #ddd;
-  background: #fafafa;
-  cursor: pointer;
-  border-radius: 8px;
+.cart-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
+
+.summary-list {
+  margin: 0;
+}
+.summary-list .row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-top: 1px dashed var(--border);
+}
+.summary-list .row:first-child {
+  border-top: 0;
+}
+.summary-list .row.total dt,
+.summary-list .row.total dd {
+  font-weight: 700;
+}
+.summary-list dt,
+.summary-list dd {
+  margin: 0;
+}
+
 .go-checkout {
   width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #111827;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-.cart-badge {
-  display: inline-block;
-  min-width: 20px;
-  padding: 2px 6px;
-  border-radius: 999px;
-  font-size: 12px;
-  background: #111;
-  color: #fff;
-  margin-left: 6px;
+:focus-visible {
+  outline: 2px solid #111827;
+  outline-offset: 2px;
 }
