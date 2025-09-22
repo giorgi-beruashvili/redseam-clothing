@@ -1,0 +1,122 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.logo svg {
+  display: block;
+  height: 24px;
+  width: auto;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cart-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.cart-btn:hover {
+  border-color: #d1d5db;
+}
+.cart-btn:focus-visible {
+  outline: 2px solid #111827;
+  outline-offset: 2px;
+}
+.cart-btn[aria-expanded="true"] {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+.cart-btn svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+  font-weight: 600;
+}
+[hidden] {
+  display: none !important;
+}
+
+.user-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #111827;
+  font-size: 14px;
+  min-height: 24px;
+}
+
+.header-right > svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  opacity: 0.7;
+}
+
+.auth-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-icons .user-icon,
+.auth-icons .login-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 8px;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.05s ease;
+  cursor: pointer;
+}
+.auth-icons .user-icon:hover,
+.auth-icons .login-icon:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+.auth-icons .user-icon:active,
+.auth-icons .login-icon:active {
+  transform: translateY(1px);
+}
+.auth-icons svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
