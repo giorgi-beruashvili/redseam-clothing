@@ -78,3 +78,7 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 window.addEventListener("hashchange", onRouteChange);
+
+window.addEventListener("auth:changed", () => {
+  renderUserDisplay();
+});
