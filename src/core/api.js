@@ -10,19 +10,43 @@ export async function apiFetch(path, options = {}) {
 
   const isFD = options?.body instanceof FormData;
   const baseHeaders = isFD ? {} : { "Content-Type": "application/json" };
+  const AUTH_FREE_PATHS = new Set(["/login", "/register"]);
+  const shouldAttachAuth = !!session?.token && !AUTH_FREE_PATHS.has(path);
 
-  const headers = {
+  let headers = {
     ...baseHeaders,
-    ...(session?.token ? { Authorization: `Bearer ${session.token}` } : {}),
+    Accept: "application/json",
+    ...(shouldAttachAuth ? { Authorization: `Bearer ${session.token}` } : {}),
     ...(options.headers || {}),
   };
 
+  if (AUTH_FREE_PATHS.has(path) && "Authorization" in headers) {
+    const { Authorization, ...rest } = headers;
+    headers = rest;
+  }
+
   const res = await fetch(`${BASE_URL}${path}`, { ...options, headers });
+
+  try {
+    const dbg = await res.clone().json();
+  } catch {
+    const txt = await res.clone().text();
+  }
 
   if (res.status === 401) {
     clearSession();
-    location.hash = "#/login";
-    throw Object.assign(new Error("Unauthorized"), { status: 401 });
+    if (!location.hash.startsWith("#/login")) {
+      location.hash = "#/login";
+    }
+    const err = new Error("Unauthorized");
+    err.status = 401;
+    try {
+      const t = await res.clone().text();
+      err.payload = t ? JSON.parse(t) : null;
+    } catch {
+      err.payload = null;
+    }
+    throw err;
   }
 
   const text = await res.text();
@@ -49,7 +73,7 @@ export async function apiFetch(path, options = {}) {
 }
 
 export async function loginUser({ email, password }) {
-  return apiFetch(API_LOGIN_PATH, {
+  return apiFetch("/login", {
     method: "POST",
     body: JSON.stringify({ email, password }),
   });

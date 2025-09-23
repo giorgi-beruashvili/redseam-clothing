@@ -112,11 +112,17 @@ export function renderLogin(root) {
     setBusy(true);
     try {
       const data = await loginUser({ email, password });
-      if (!data?.token || !data?.user) {
-        throw new Error("Invalid server response");
-      }
-      setSession({ token: data.token, user: data.user });
+      const token =
+        data?.token ??
+        data?.access_token ??
+        data?.data?.token ??
+        data?.data?.access_token;
+      const user = data?.user ?? data?.data?.user ?? null;
 
+      if (!token) {
+        throw new Error("Invalid server response: missing token");
+      }
+      setSession({ token, user });
       location.hash = "#/";
     } catch (err) {
       const errs = err?.payload?.errors || {};
