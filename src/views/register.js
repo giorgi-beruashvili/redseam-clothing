@@ -217,6 +217,8 @@ export function renderRegister(root) {
       if (errs.email?.[0]) setErr("#err-email", errs.email[0], $email);
       if (errs.password?.[0])
         setErr("#err-password", errs.password[0], $password);
+      if (errs.password_confirmation?.[0])
+        setErr("#err-confirm", errs.password_confirmation[0], $confirm);
       if (errs.avatar?.[0]) setErr("#err-avatar", errs.avatar[0], $avatar);
 
       setText(alertBox, err?.message || "Registration failed");
