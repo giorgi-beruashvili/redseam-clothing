@@ -190,8 +190,8 @@ export function renderRegister(root) {
         username,
         email,
         password,
-        confirm,
-        avatarFile,
+        password_confirmation: confirm,
+        ...(avatarFile ? { avatar: avatarFile } : {}),
       });
 
       if (regRes?.token && regRes?.user) {

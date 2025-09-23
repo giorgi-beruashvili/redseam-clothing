@@ -27,7 +27,7 @@ export function renderLogin(root) {
 
       <p class="button ghost">Not a member? <a href="#/register">Register</a></p>
 
-      <div class="form-alert" id="login-alert" role="alert" aria-live="polite"></div>
+      <div class="form-alert" id="login-alert" role="alert" aria-live="polite" hidden></div>
     </form>
   </section>
 `;
@@ -77,18 +77,23 @@ export function renderLogin(root) {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    if (submitBtn?.disabled) return;
+
     setErr("#err-email", "", $email);
     setErr("#err-password", "", $password);
     setText(alertBox, "");
-    alertBox.style.display = "none";
+    alertBox.hidden = true;
 
-    const email = $email.value.trim();
+    const email = $email.value.trim().toLowerCase();
     const password = $password.value;
 
     let ok = true;
+    let firstInvalid = null;
+
     if (!minLen(email, 3) || !isEmail(email)) {
       setErr("#err-email", "Invalid email format", $email);
       ok = false;
+      firstInvalid ||= $email;
     }
     if (!minLen(password, 3)) {
       setErr(
@@ -97,8 +102,12 @@ export function renderLogin(root) {
         $password
       );
       ok = false;
+      firstInvalid ||= $password;
     }
-    if (!ok) return;
+    if (!ok) {
+      firstInvalid?.focus();
+      return;
+    }
 
     setBusy(true);
     try {
@@ -115,8 +124,11 @@ export function renderLogin(root) {
       if (errs.password?.[0])
         setErr("#err-password", errs.password[0], $password);
 
-      setText(alertBox, err?.message || "Login failed");
-      alertBox.style.display = "block";
+      setText(
+        alertBox,
+        err?.payload?.message || err?.message || "Login failed"
+      );
+      alertBox.hidden = false;
     } finally {
       setBusy(false);
     }
