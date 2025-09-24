@@ -4,6 +4,7 @@ const BASE_URL = "https://api.redseam.redberryinternship.ge/api";
 
 const API_LOGIN_PATH = "/login";
 const API_REGISTER_PATH = "/register";
+const PRODUCTS_PATH = "/products";
 
 export async function apiFetch(path, options = {}) {
   const session = getSession();
@@ -94,4 +95,41 @@ export async function registerUser(payload) {
   if (avatarFile) fd.append("avatar", avatarFile);
 
   return apiFetch(API_REGISTER_PATH, { method: "POST", body: fd });
+}
+
+function normalizeSort(input) {
+  if (!input) return undefined;
+  const v = String(input).toLowerCase();
+  if (v === "price" || v === "created_at") return v;
+  if (v === "price_asc") return "price";
+  if (v === "price_desc") return "-price";
+  if (v === "newest" || v === "created_at_desc") return "-created_at";
+  if (v === "oldest" || v === "created_at_asc") return "created_at";
+  return v;
+}
+
+export async function fetchProducts({
+  page = 1,
+  limit,
+  sort,
+  min,
+  max,
+  priceFrom,
+  priceTo,
+} = {}) {
+  const qs = new URLSearchParams();
+  qs.set("page", String(page));
+
+  const s = normalizeSort(sort);
+  if (s) qs.set("sort", s);
+
+  const from = min ?? priceFrom;
+  const to = max ?? priceTo;
+  if (from !== undefined && from !== "") {
+    qs.set("filter[price_from]", String(from));
+  }
+  if (to !== undefined && to !== "") {
+    qs.set("filter[price_to]", String(to));
+  }
+  return apiFetch(`${PRODUCTS_PATH}?${qs.toString()}`, { method: "GET" });
 }
