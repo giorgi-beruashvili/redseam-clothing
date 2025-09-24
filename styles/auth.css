@@ -91,3 +91,7 @@
   color: #713f12;
   display: none;
 }
+
+.form-alert:not([hidden]) {
+  display: block;
+}

@@ -37,7 +37,7 @@ export function renderRegister(root) {
       <div class="form-row">
         <label for="reg-avatar">Avatar</label>
         <div class="inline">
-          <input id="reg-avatar" name="avatar" type="file" accept="image/jpeg,image/png" />
+          <input id="reg-avatar" name="avatar" type="file" accept="image/jpeg,image/png",image/svg+xml />
           <img id="reg-preview" class="preview" alt="avatar preview" />
           <a href="#upload">Upload new</a>
           <a href="#remove">Remove</a>
@@ -95,7 +95,9 @@ export function renderRegister(root) {
       return;
     }
 
-    const okType = ["image/jpeg", "image/png"].includes(file.type);
+    const okType = ["image/jpeg", "image/png", "image/svg+xml"].includes(
+      file.type
+    );
     if (!okType) {
       setErr("#err-avatar", "Invalid file type", $avatar);
       $avatar.value = "";
@@ -177,7 +179,10 @@ export function renderRegister(root) {
       ok = false;
     }
 
-    if (avatarFile && !["image/jpeg", "image/png"].includes(avatarFile.type)) {
+    if (
+      avatarFile &&
+      !["image/jpeg", "image/png", "image/svg+xml"].includes(avatarFile.type)
+    ) {
       setErr("#err-avatar", "Invalid file type", $avatar);
       ok = false;
     }
