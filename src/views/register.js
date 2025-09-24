@@ -150,9 +150,9 @@ export function renderRegister(root) {
     alertBox.style.display = "none";
 
     const username = $username.value.trim();
-    const email = $email.value.trim();
-    const password = $password.value;
-    const confirm = $confirm.value;
+    const email = $email.value.trim().toLowerCase();
+    const password = $password.value.trim();
+    const confirm = $confirm.value.trim();
     const avatarFile = $avatar.files?.[0] || null;
 
     let ok = true;
@@ -172,7 +172,7 @@ export function renderRegister(root) {
       );
       ok = false;
     }
-    if (confirm !== password) {
+    if (!confirm || confirm !== password) {
       setErr("#err-confirm", "Passwords do not match", $confirm);
       ok = false;
     }
@@ -186,17 +186,18 @@ export function renderRegister(root) {
 
     setBusy(true);
     try {
-      const regRes = await registerUser({
-        username,
-        email,
-        password,
-        password_confirmation: confirm,
-        ...(avatarFile ? { avatar: avatarFile } : {}),
-      });
+      const fd = new FormData();
+      fd.append("username", username);
+      fd.append("email", email);
+      fd.append("password", password);
+      fd.append("password_confirmation", confirm);
+      if (avatarFile) fd.append("avatar", avatarFile);
+
+      const regRes = await registerUser(fd);
 
       if (regRes?.token && regRes?.user) {
         setSession({ token: regRes.token, user: regRes.user });
-        location.hash = "#/";
+        location.hash = "#/login";
         return;
       }
 
