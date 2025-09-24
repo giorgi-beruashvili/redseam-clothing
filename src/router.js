@@ -5,13 +5,13 @@ import { renderCheckout } from "./views/checkout.js";
 import { renderProductDetail } from "./views/product-detail.js";
 
 const routes = [
-  { path: "^#/$", action: (root) => renderHome(root) },
+  { path: "^#/(\\?.*)?$", action: (root) => renderHome(root) },
   { path: "^#$/?$", action: (root) => renderHome(root) },
-  { path: "^#/login$", action: (root) => renderLogin(root) },
-  { path: "^#/register$", action: (root) => renderRegister(root) },
-  { path: "^#/checkout$", action: (root) => renderCheckout(root) },
+  { path: "^#/login(\\?.*)?$", action: (root) => renderLogin(root) },
+  { path: "^#/register(\\?.*)?$", action: (root) => renderRegister(root) },
+  { path: "^#/checkout(\\?.*)?$", action: (root) => renderCheckout(root) },
   {
-    path: "^#/product/(\\d+)$",
+    path: "^#/product/(\\d+)(\\?.*)?$",
     action: (root, m) => renderProductDetail(root, { id: m[1] }),
   },
 ];
