@@ -6,15 +6,9 @@ const PAGE_SIZE = 10;
 export function renderHome(root) {
   const q = parseHashQuery();
   const page = clampInt(q.page ? Number(q.page) : 1, 1);
-  const allowedSorts = new Set([
-    "",
-    "newest",
-    "oldest",
-    "price_asc",
-    "price_desc",
-  ]);
-  const sortRaw = q.sort || "newest";
-  const sort = allowedSorts.has(sortRaw) ? sortRaw : "newest";
+  const allowedSorts = new Set(["newest", "price_asc", "price_desc"]);
+  const sortRaw = q.sort;
+  const sort = allowedSorts.has(sortRaw) ? sortRaw : null;
 
   const min = cleanNum(q.min);
   const max = cleanNum(q.max);
@@ -22,20 +16,16 @@ export function renderHome(root) {
   root.innerHTML = `
     <section>
       <h1 style="margin-bottom:10px;">Products</h1>
-
       <div class="products-toolbar" id="toolbar">
         <div class="form-ctl">
           <label for="sort">Sort by</label>
           <select id="sort">
-            <!-- WHY: ზუსტი მნიშვნელობები Scalar-ის მიხედვით -->
-            <option value="">Default</option>
-            <option value="price_asc">New products first</option>
-            <option value="price_desc">Price, low to high</option>
-            <option value="newest">Price, high to low</option>
-            <option value="oldest">Oldest</option>
+              <option value="" hidden disabled selected>Sort by</option>
+              <option value="newest">New products first</option>
+              <option value="price_asc">Price, low to high</option>
+              <option value="price_desc">Price, high to low</option>
           </select>
         </div>
-
         <div class="form-ctl">
           <label for="min">Min</label>
           <input id="min" type="number" min="0" step="1" placeholder="0" />
@@ -44,23 +34,26 @@ export function renderHome(root) {
           <label for="max">Max</label>
           <input id="max" type="number" min="0" step="1" placeholder="9999" />
         </div>
-
         <button id="apply" class="button">Apply</button>
+        <button id="clear" class="button button-secondary">Clear filters</button>
         <span id="list-meta" class="meta" aria-live="polite"></span>
       </div>
-
       <div id="grid" class="products-grid" aria-live="polite"></div>
-
       <nav id="pager" class="pagination" aria-label="Pagination"></nav>
     </section>
   `;
 
   const $ = (sel) => root.querySelector(sel);
-  $("#sort").value = sort;
+  $("#sort").value = sort ?? "";
   if (min !== null) $("#min").value = String(min);
   if (max !== null) $("#max").value = String(max);
 
   loadProducts();
+
+  $("#sort").addEventListener("change", () => {
+    const v = $("#sort").value;
+    setHashQuery({ page: 1, sort: v === "" ? undefined : v });
+  });
 
   $("#apply").addEventListener("click", () => {
     const vMin = Number($("#min").value);
@@ -71,12 +64,27 @@ export function renderHome(root) {
 
     const next = {
       page: 1,
-      sort: $("#sort").value || undefined,
       min: $("#min").value || undefined,
       max: $("#max").value || undefined,
     };
     setHashQuery(next);
+    updateClearVisibility();
   });
+
+  $("#clear")?.addEventListener("click", () => {
+    $("#sort").value = "";
+    $("#min").value = "";
+    $("#max").value = "";
+    setHashQuery({ page: 1, min: undefined, max: undefined });
+    updateClearVisibility();
+  });
+
+  function updateClearVisibility() {
+    const hasFilters = $("#min").value !== "" || $("#max").value !== "";
+    const clearBtn = $("#clear");
+    if (clearBtn) clearBtn.style.display = hasFilters ? "" : "none";
+  }
+  updateClearVisibility();
 
   function clampInt(n, minV) {
     if (!Number.isFinite(n) || n < minV) return minV;
@@ -110,7 +118,12 @@ export function renderHome(root) {
     meta.textContent = "";
 
     try {
-      const res = await fetchProducts({ page, sort, min, max });
+      const res = await fetchProducts({
+        page,
+        sort: sort ?? undefined,
+        min,
+        max,
+      });
       const items = Array.isArray(res?.data) ? res.data : [];
       const currentPage = Number(res?.meta?.current_page) || page;
       const perPage = Number(res?.meta?.per_page) || PAGE_SIZE;
@@ -174,7 +187,8 @@ export function renderHome(root) {
   function renderPager(mount, current, totalPages) {
     const parts = [];
     const go = (n) => {
-      setHashQuery({ page: n });
+      const now = parseHashQuery();
+      setHashQuery({ ...now, page: n });
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
