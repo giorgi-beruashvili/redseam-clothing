@@ -133,3 +133,9 @@ export async function fetchProducts({
   }
   return apiFetch(`${PRODUCTS_PATH}?${qs.toString()}`, { method: "GET" });
 }
+
+const PRODUCT_BY_ID_PATH = (id) => `/products/${id}`;
+
+export async function fetchProductById(id) {
+  return apiFetch(PRODUCT_BY_ID_PATH(id), { method: "GET" });
+}
