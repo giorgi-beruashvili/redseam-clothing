@@ -1,0 +1,127 @@
+.products-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 6px 0 18px;
+}
+.products-toolbar .form-ctl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.products-toolbar label {
+  font-size: 12px;
+  color: #6b7280;
+}
+.products-toolbar select,
+.products-toolbar input {
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  background: #fff;
+}
+.products-toolbar .button {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: #ff4d17;
+  color: #fff;
+  font-weight: 600;
+}
+.products-toolbar .meta {
+  margin-left: auto;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.products-grid.fixed-4-4-2 > .product-card:nth-last-child(2) {
+  grid-column: 2;
+}
+.products-grid.fixed-4-4-2 > .product-card:last-child {
+  grid-column: 3;
+}
+
+.product-card {
+  cursor: pointer;
+}
+.product-card .open {
+  display: none;
+}
+
+.product-card {
+  background: #fff;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.15s ease;
+}
+.product-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+.product-card .thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4/5;
+  object-fit: cover;
+  background: #f8fafc;
+}
+.product-card .info {
+  padding: 10px 12px 12px;
+}
+.product-card .title {
+  font-size: 14px;
+  color: #111827;
+  line-height: 1.35;
+  margin-bottom: 6px;
+  min-height: 2.6em;
+}
+.product-card .price {
+  font-size: 13px;
+  color: #111827;
+  font-weight: 600;
+}
+.product-card .open {
+  display: none;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 0 8px;
+}
+.page-btn {
+  min-width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  border: 1.5px solid #f1f5f9;
+  background: #fff;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+}
+.page-btn[aria-current="page"] {
+  border-color: #ff4d17;
+  color: #ff4d17;
+  background: #fff;
+}
+.page-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.page-btn[data-ellipsis="true"] {
+  cursor: default;
+  font-weight: 700;
+}

@@ -25,13 +25,13 @@ export function renderHome(root) {
 
       <div class="products-toolbar" id="toolbar">
         <div class="form-ctl">
-          <label for="sort">Sort</label>
+          <label for="sort">Sort by</label>
           <select id="sort">
             <!-- WHY: ზუსტი მნიშვნელობები Scalar-ის მიხედვით -->
             <option value="">Default</option>
-            <option value="price_asc">Price ↑</option>
-            <option value="price_desc">Price ↓</option>
-            <option value="newest">Newest</option>
+            <option value="price_asc">New products first</option>
+            <option value="price_desc">Price, low to high</option>
+            <option value="newest">Price, high to low</option>
             <option value="oldest">Oldest</option>
           </select>
         </div>
@@ -123,11 +123,12 @@ export function renderHome(root) {
         ? currentPage + 1
         : currentPage;
 
+      const total = Number(res?.meta?.total) || to;
+
       grid.innerHTML =
         items.map(cardHTML).join("") || `<div class="meta">No products</div>`;
-      meta.textContent = `Page ${currentPage}${
-        Number.isFinite(totalPages) ? "/" + totalPages : ""
-      } · showing ${from}–${to}`;
+
+      meta.textContent = `Showing ${from}–${to} of ${total} results`;
 
       renderPager(pager, currentPage, totalPages);
     } catch (err) {
@@ -143,18 +144,17 @@ export function renderHome(root) {
     const id = p.id;
     const title = escapeHTML(p.name || "Product");
     const price = Number(p.price ?? 0).toFixed(2);
-    const img = p.image || "";
+    const raw = p.cover_image || "";
 
     return `
-      <article class="product-card">
-        <img class="thumb" src="${img}" alt="${title}" onerror="this.style.display='none'"/>
-        <div class="info">
-          <div class="title">${title}</div>
-          <div class="price">$${price}</div>
-          <button class="open" onclick="location.hash='#/product/${id}'">View</button>
-        </div>
-      </article>
-    `;
+    <article class="product-card" onclick="location.hash='#/product/${id}'">
+      <img class="thumb" src="${raw}" alt="${title}" onerror="this.style.display='none'"/>
+      <div class="info">
+        <div class="title">${title}</div>
+        <div class="price">$${price}</div>
+      </div>
+    </article>
+  `;
   }
 
   function escapeHTML(s) {
@@ -173,48 +173,65 @@ export function renderHome(root) {
 
   function renderPager(mount, current, totalPages) {
     const parts = [];
-
     const go = (n) => {
       setHashQuery({ page: n });
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
-    const btn = (label, n, { current = false, disabled = false } = {}) => {
-      return `<button class="page-btn" ${
-        current ? 'aria-current="page"' : ""
-      } ${disabled ? "disabled" : ""} data-goto="${n}">${label}</button>`;
-    };
+    const btn = (label, n, opts = {}) =>
+      `<button class="page-btn" ${opts.current ? 'aria-current="page"' : ""} ${
+        opts.disabled ? "disabled" : ""
+      } ${
+        opts.ellipsis ? 'data-ellipsis="true"' : ""
+      } data-goto="${n}">${label}</button>`;
 
     parts.push(btn("«", Math.max(1, current - 1), { disabled: current <= 1 }));
 
-    if (Number.isFinite(totalPages)) {
-      for (let i = 1; i <= totalPages; i++) {
-        parts.push(btn(String(i), i, { current: i === current }));
-      }
-      parts.push(
-        btn("»", Math.min(totalPages, current + 1), {
-          disabled: current >= totalPages,
-        })
+    if (Number.isFinite(totalPages) && totalPages > 1) {
+      const show = new Set(
+        [
+          1,
+          2,
+          totalPages - 1,
+          totalPages,
+          current - 1,
+          current,
+          current + 1,
+        ].filter((n) => n >= 1 && n <= totalPages)
       );
+
+      let last = 0;
+      for (let i = 1; i <= totalPages; i++) {
+        if (!show.has(i)) continue;
+        if (i - last > 1)
+          parts.push(btn("…", current, { ellipsis: true, disabled: true }));
+        parts.push(btn(String(i), i, { current: i === current }));
+        last = i;
+      }
     } else {
       parts.push(btn(String(current), current, { current: true }));
-      parts.push(btn("»", current + 1));
     }
+
+    parts.push(
+      btn(
+        "»",
+        Number.isFinite(totalPages)
+          ? Math.min(totalPages, current + 1)
+          : current + 1,
+        { disabled: Number.isFinite(totalPages) && current >= totalPages }
+      )
+    );
 
     mount.innerHTML = parts.join("");
 
     mount.addEventListener(
       "click",
       (e) => {
-        const target = e.target.closest(".page-btn");
-        if (!target) return;
-        const n = Number(target.dataset.goto);
-        if (
-          !Number.isFinite(n) ||
-          n < 1 ||
-          (Number.isFinite(totalPages) && n > totalPages)
-        )
-          return;
+        const t = e.target.closest(".page-btn");
+        if (!t || t.hasAttribute("disabled") || t.dataset.ellipsis) return;
+        const n = Number(t.dataset.goto);
+        if (!Number.isFinite(n)) return;
+        if (Number.isFinite(totalPages) && (n < 1 || n > totalPages)) return;
         go(n);
       },
       { once: true }
