@@ -82,3 +82,5 @@ window.addEventListener("hashchange", onRouteChange);
 window.addEventListener("auth:changed", () => {
   renderUserDisplay();
 });
+
+window.addEventListener("cart:changed", renderCartBadge);
