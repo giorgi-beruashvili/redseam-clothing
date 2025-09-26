@@ -270,3 +270,65 @@ section.checkout-wrap {
 .ck-line + .ck-line {
   border-top: 1px dashed #f1f1f3;
 }
+
+.modal {
+  max-width: 720px;
+  padding: 32px;
+}
+
+.modal.success {
+  text-align: center;
+  position: relative;
+}
+
+.modal .modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.success-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px auto;
+  border-radius: 50%;
+  background: #ecfdf5;
+  display: grid;
+  place-items: center;
+  border: 1px solid #d1fae5;
+}
+
+.success-icon svg {
+  width: 28px;
+  height: 28px;
+  color: #10b981;
+}
+
+.modal h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 6px 0 4px 0;
+}
+
+.modal .sub {
+  color: #6b7280;
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+
+.button-primary {
+  background: #ff3b00;
+  border-color: #ff3b00;
+  color: #fff;
+}
+.button-primary:hover {
+  filter: brightness(0.95);
+}
