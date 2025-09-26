@@ -5,12 +5,16 @@ const BASE_URL = "https://api.redseam.redberryinternship.ge/api";
 const API_LOGIN_PATH = "/login";
 const API_REGISTER_PATH = "/register";
 const PRODUCTS_PATH = "/products";
+const API_CHECKOUT_PATH = "/cart/checkout";
 
 export async function apiFetch(path, options = {}) {
   const session = getSession();
 
   const isFD = options?.body instanceof FormData;
-  const baseHeaders = isFD ? {} : { "Content-Type": "application/json" };
+  // IMPORTANT: Content-Type მხოლოდ მაშინ, როცა body არსებობს და არ არის FormData
+  const hasBody = options?.body !== undefined && options?.body !== null;
+  const baseHeaders =
+    !isFD && hasBody ? { "Content-Type": "application/json" } : {};
   const AUTH_FREE_PATHS = new Set(["/login", "/register"]);
   const shouldAttachAuth = !!session?.token && !AUTH_FREE_PATHS.has(path);
 
@@ -140,8 +144,8 @@ export async function fetchProductById(id) {
   return apiFetch(PRODUCT_BY_ID_PATH(id), { method: "GET" });
 }
 
-export async function submitOrder(payload) {
-  return apiFetch(API_CREATE_ORDER_PATH, {
+export async function checkoutCart(payload) {
+  return apiFetch(API_CHECKOUT_PATH, {
     method: "POST",
     body: JSON.stringify(payload),
   });
