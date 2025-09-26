@@ -109,13 +109,21 @@ export function renderCheckout(root) {
     </section>
 
     <div id="ck-backdrop" class="modal-backdrop" hidden></div>
-    <div id="ck-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="ck-title" aria-hidden="true" hidden>
-      <h2 id="ck-title">Congrats!</h2>
-      <p>Your order has been placed successfully.</p>
-      <div class="actions">
-        <button id="ck-close" class="button">Continue shopping</button>
+      <div id="ck-modal" class="modal success" role="dialog" aria-modal="true" aria-labelledby="ck-title" aria-hidden="true">
+        <button id="ck-x" class="modal-close" aria-label="Close">
+          ×
+        </button>
+        <div class="success-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 id="ck-title">Congrats!</h2>
+        <p class="sub">Your order is placed successfully!</p>
+        <div class="actions" style="justify-content:center">
+          <button id="ck-close" class="button button-primary">Continue shopping</button>
+        </div>
       </div>
-    </div>
   `;
 
   const $ = (sel) => root.querySelector(sel);
@@ -124,6 +132,7 @@ export function renderCheckout(root) {
   const modal = $("#ck-modal");
   const backdrop = $("#ck-backdrop");
   const closeBtn = $("#ck-close");
+  const xBtn = $("#ck-x");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -213,10 +222,12 @@ export function renderCheckout(root) {
     }
   });
 
-  closeBtn.addEventListener("click", () => {
+  const goHome = () => {
     closeModal();
     location.hash = "#/";
-  });
+  };
+  closeBtn.addEventListener("click", goHome);
+  xBtn.addEventListener("click", closeModal);
   backdrop.addEventListener("click", closeModal);
 
   function openModal() {
