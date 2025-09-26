@@ -60,6 +60,10 @@ export function renderCheckout(root) {
             totals.totalPrice
           )}</span></div>
         </div>
+        <div class="actions">
+            <button class="button" type="submit">Pay</button>
+            <span id="form-msg" class="help" aria-live="polite"></span>
+          </div>
       </div>
 
       <div class="ck-form">
@@ -100,10 +104,6 @@ export function renderCheckout(root) {
             </div>
           </div>
 
-          <div class="actions">
-            <button class="button" type="submit">Pay</button>
-            <span id="form-msg" class="help" aria-live="polite"></span>
-          </div>
         </form>
       </div>
     </section>
