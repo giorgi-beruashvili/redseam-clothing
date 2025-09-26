@@ -139,3 +139,10 @@ const PRODUCT_BY_ID_PATH = (id) => `/products/${id}`;
 export async function fetchProductById(id) {
   return apiFetch(PRODUCT_BY_ID_PATH(id), { method: "GET" });
 }
+
+export async function submitOrder(payload) {
+  return apiFetch(API_CREATE_ORDER_PATH, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
