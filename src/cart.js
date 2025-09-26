@@ -88,3 +88,10 @@ function fireChanged(cart) {
 export function formatMoney(n) {
   return `$${Number(n || 0).toFixed(2)}`;
 }
+
+export function clearCart() {
+  setCart([]);
+  window.dispatchEvent(
+    new CustomEvent("cart:changed", { detail: { total: 0 } })
+  );
+}
