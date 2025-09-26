@@ -1,5 +1,6 @@
 import { runRouter } from "./router.js";
 import { getSession, getTotalQty } from "./state.js";
+import { initCartSidebar } from "./ui/cart-sidebar.js";
 
 function renderUserDisplay() {
   const mount = document.getElementById("user-display");
@@ -74,6 +75,7 @@ window.addEventListener("DOMContentLoaded", () => {
   renderUserDisplay();
   renderCartBadge();
   setupCartToggle();
+  initCartSidebar();
   onRouteChange();
 });
 
