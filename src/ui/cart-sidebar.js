@@ -5,22 +5,34 @@ import {
   removeItem,
   getTotals,
   formatMoney,
+  loadServerCart,
 } from "../cart.js";
 
 export function initCartSidebar(opts = {}) {
   const sidebar = document.getElementById("cart-sidebar");
   const content = document.getElementById("cart-content");
   const checkoutBtn = sidebar.querySelector(".go-checkout");
-
+  loadServerCart();
   render();
   window.addEventListener("cart:changed", render);
+
+  checkoutBtn?.addEventListener("click", (e) => {
+    if (checkoutBtn.disabled) return;
+    const backdrop = document.getElementById("backdrop");
+    const toggle = document.getElementById("cart-toggle");
+    sidebar.classList.remove("open");
+    sidebar.setAttribute("aria-hidden", "true");
+    if (backdrop) backdrop.hidden = true;
+    if (toggle) toggle.setAttribute("aria-expanded", "false");
+    location.hash = "#/checkout";
+  });
 
   function render() {
     const items = getCart();
     if (items.length === 0) {
       content.innerHTML = `<div class="cart-empty"><strong>Uh-oh…</strong> you've got nothin’ in your cart just yet! <a class="start-shopping" href="#/">Start shopping →</a></div>`;
       setSummary(0, 0);
-      checkoutBtn.disabled = true;
+      checkoutBtn.ariadisabled = "true";
       return;
     }
     content.innerHTML = items.map(itemHTML).join("");
@@ -98,7 +110,6 @@ export function initCartSidebar(opts = {}) {
     const totalEl = document.getElementById("cart-total");
     const countEl = document.getElementById("cart-count");
     const badgeEl = document.getElementById("cart-badge");
-
     const fee = totalQty > 0 ? readMoney(deliveryEl?.textContent) ?? 5 : 0;
     const total = totalQty > 0 ? subtotal + fee : 0;
 

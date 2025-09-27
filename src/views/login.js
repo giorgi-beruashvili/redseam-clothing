@@ -47,10 +47,8 @@ export function renderLogin(root) {
 
   const form = $("#login-form");
   const alertBox = $("#login-alert");
-
   const $email = $("#login-email");
   const $password = $("#login-password");
-
   const submitBtn = root.querySelector('.actions .button[type="submit"]');
   const setBusy = (v) => {
     if (!submitBtn) return;
@@ -86,7 +84,6 @@ export function renderLogin(root) {
 
     const email = $email.value.trim().toLowerCase();
     const password = $password.value;
-
     let ok = true;
     let firstInvalid = null;
 

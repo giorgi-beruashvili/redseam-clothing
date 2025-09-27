@@ -1,6 +1,7 @@
 import { runRouter } from "./router.js";
 import { getSession, getTotalQty } from "./state.js";
 import { initCartSidebar } from "./ui/cart-sidebar.js";
+import { loadServerCart } from "./cart.js";
 
 function renderUserDisplay() {
   const mount = document.getElementById("user-display");
@@ -71,7 +72,11 @@ function onRouteChange() {
   renderCartBadge();
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
+  try {
+    await loadServerCart();
+  } catch (e) {}
+
   renderUserDisplay();
   renderCartBadge();
   setupCartToggle();

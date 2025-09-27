@@ -70,14 +70,12 @@ export function renderRegister(root) {
 
   const form = $("#register-form");
   const alertBox = $("#register-alert");
-
   const $username = $("#reg-username");
   const $email = $("#reg-email");
   const $password = $("#reg-password");
   const $confirm = $("#reg-confirm");
   const $avatar = $("#reg-avatar");
   const $preview = $("#reg-preview");
-
   const submitBtn = root.querySelector('.actions .button[type="submit"]');
   const setBusy = (v) => {
     if (!submitBtn) return;

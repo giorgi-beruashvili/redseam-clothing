@@ -61,9 +61,9 @@ export function renderCheckout(root) {
           )}</span></div>
         </div>
         <div class="actions">
-            <button class="button" type="submit">Pay</button>
+            <button class="button" type="submit" form="ck-form">Pay</button>
             <span id="form-msg" class="help" aria-live="polite"></span>
-          </div>
+        </div>
       </div>
 
       <div class="ck-form">

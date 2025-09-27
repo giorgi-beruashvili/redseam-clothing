@@ -65,10 +65,8 @@ export function renderProductDetail(root, params) {
             <img id="pd-main" class="pd-main" alt="" />
             <div id="pd-thumbs" class="pd-thumbs"></div>
           </div>
-
           <div class="pd-info">
             <div class="pd-title">${escapeHTML(p.name)}</div>
-
             <div class="pd-brand">
               ${
                 p.brandLogo
@@ -79,27 +77,21 @@ export function renderProductDetail(root, params) {
               }
               <span>${escapeHTML(p.brandName)}</span>
             </div>
-
             <div class="pd-price">$${p.price.toFixed(2)}</div>
-
             ${renderColors(p.colors, activeColor)}
             ${renderSizes(p.sizes, activeSize)}
-
             <div class="size-row" style="${
               p.sizes?.length ? "" : "display:none;"
             }">
             </div>
-
             <div class="qty-row">
               <label for="qty-input">Quantity</label>
               <input id="qty-input" type="number" min="1" step="1" value="1" />
             </div>
-
             <div class="pd-actions">
               <button id="add-to-cart" class="button">Add to cart</button>
               <span id="toast" class="toast">Added to cart</span>
             </div>
-
             <div class="pd-desc">${escapeHTML(p.description)}</div>
           </div>
         </section>
@@ -112,7 +104,7 @@ export function renderProductDetail(root, params) {
       const toast = $("#toast");
       const sizeSelect = $("#size-select");
       const qtyInput = $("#qty-input");
-
+      let colorToImageIdx = new Map();
       recomputeStockCaps();
       applyQtyMaxAttr();
 
@@ -127,17 +119,22 @@ export function renderProductDetail(root, params) {
         `
         )
         .join("");
-
-      if (activeColor) {
-        const idxByColor = findImageIndexForColor(activeColor, p.images);
-        if (idxByColor >= 0) {
-          activeImageIdx = idxByColor;
-          setMainImage(activeImageIdx);
+      if (Array.isArray(p.colors) && Array.isArray(p.images)) {
+        for (const c of p.colors) {
+          const i = p.images.findIndex((u) => imageMatchesColor(u, c));
+          if (i >= 0 && !colorToImageIdx.has(c)) {
+            colorToImageIdx.set(c, i);
+          }
         }
+      }
+      if (activeColor && colorToImageIdx.has(activeColor)) {
+        activeImageIdx = colorToImageIdx.get(activeColor);
+      } else if (activeColor) {
+        const idxByColor = findImageIndexForColor(activeColor, p.images);
+        if (idxByColor >= 0) activeImageIdx = idxByColor;
       }
 
       maybeToggleAddButton();
-
       setMainImage(activeImageIdx);
 
       thumbs.addEventListener("click", (e) => {
@@ -214,13 +211,10 @@ export function renderProductDetail(root, params) {
 
         addToCart({
           id: p.id,
-          title: p.name,
-          price: p.price,
           image: imgUrl,
-          colorId: null,
-          colorName,
-          size: finalSize,
           qty,
+          color: p.colors?.length ? activeColor || "" : undefined,
+          size: p.sizes?.length ? finalSize || "" : undefined,
         });
 
         toast.classList.add("show");
@@ -293,24 +287,37 @@ export function renderProductDetail(root, params) {
       function assertColorSwitchUpdatesImageIfPossible() {
         if (!Array.isArray(p.colors) || p.colors.length < 2) return;
         if (!Array.isArray(p.images) || p.images.length === 0) return;
-        const candidate = p.colors.find(
-          (c) => findImageIndexForColor(c, p.images) >= 0
-        );
-        if (!candidate) return;
+
         const idxBefore = activeImageIdx;
         const prevColor = activeColor;
-        activeColor = candidate;
-        updateActiveSwatch(activeColor);
-        const idx = findImageIndexForColor(activeColor, p.images);
-        if (idx >= 0) {
-          activeImageIdx = idx;
-          setMainImage(activeImageIdx);
-          if (activeImageIdx === idxBefore && prevColor !== activeColor) {
-            throw new Error(
-              "Color change did not update image despite detectable mapping"
-            );
+
+        let candidate = null;
+        let mappedIdx = -1;
+        for (const c of p.colors || []) {
+          const i = findImageIndexForColor(c, p.images);
+          if (i >= 0 && i !== idxBefore) {
+            candidate = c;
+            mappedIdx = i;
+            break;
           }
         }
+
+        if (!candidate) return;
+
+        activeColor = candidate;
+        updateActiveSwatch(activeColor);
+        activeImageIdx = mappedIdx;
+        setMainImage(activeImageIdx);
+
+        if (
+          activeImageIdx === idxBefore &&
+          String(prevColor) !== String(activeColor)
+        ) {
+          throw new Error(
+            "Color change did not update image despite detectable mapping"
+          );
+        }
+
         activeColor = prevColor;
         updateActiveSwatch(activeColor);
         setMainImage(idxBefore);
@@ -348,15 +355,32 @@ export function renderProductDetail(root, params) {
 
       function findImageIndexForColor(color, images) {
         if (!color || !Array.isArray(images)) return -1;
-        const idx = images.findIndex((url) => imageMatchesColor(url, color));
-        return idx;
+        if (colorToImageIdx instanceof Map && colorToImageIdx.has(color)) {
+          return colorToImageIdx.get(color);
+        }
+        return images.findIndex((url) => imageMatchesColor(url, color));
       }
 
       function imageMatchesColor(url, color) {
         try {
-          const u = String(url).toLowerCase();
-          const c = String(color).toLowerCase();
-          return u.includes(c);
+          const file = String(url).toLowerCase().split("?")[0].split("#")[0];
+          const name = file.split("/").pop() || "";
+          const base = name.replace(/\.(png|jpe?g|webp|gif|svg)$/i, "");
+          const tokens = base.split(/[_\-\s\.]+/).filter(Boolean); // word tokens
+          const c = String(color).toLowerCase().trim();
+          if (tokens.includes(c)) return true;
+          if (
+            tokens.some(
+              (t) =>
+                t === `dark${c}` ||
+                t === `light${c}` ||
+                t === `${c}dark` ||
+                t === `${c}light`
+            )
+          ) {
+            return true;
+          }
+          return false;
         } catch {
           return false;
         }

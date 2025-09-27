@@ -11,7 +11,6 @@ const CART_CHECKOUT_PATH = "/cart/checkout";
 
 export async function apiFetch(path, options = {}) {
   const session = getSession();
-
   const isFD = options?.body instanceof FormData;
   const hasBody = options?.body !== undefined && options?.body !== null;
   const baseHeaders =
@@ -143,50 +142,44 @@ export async function fetchCart() {
   return apiFetch(CART_PATH, { method: "GET" });
 }
 
-export async function addCartProduct({
-  productId,
-  quantity = 1,
-  color_id = null,
-  size = null,
-}) {
+export async function addCartProduct(productId, { quantity, color, size }) {
+  const body = {};
+  if (Number.isFinite(Number(quantity))) body.quantity = Number(quantity);
+  if (typeof color === "string" && color.trim()) body.color = color.trim();
+  if (typeof size === "string" && size.trim()) body.size = size.trim();
+
   return apiFetch(CART_PRODUCTS_PATH(productId), {
     method: "POST",
-    body: JSON.stringify({
-      quantity: Math.max(1, Number(quantity || 1)),
-      color_id,
-      size,
-    }),
+    body: JSON.stringify(body),
   });
 }
 
 export async function updateCartProduct({
   productId,
   quantity,
-  color_id = null,
-  size = null,
+  color,
+  size,
   delta,
 }) {
   const body = {};
   if (delta !== undefined) body.delta = Number(delta);
   if (quantity !== undefined)
     body.quantity = Math.max(0, Math.floor(Number(quantity)));
-  if (color_id !== undefined) body.color_id = color_id;
-  if (size !== undefined) body.size = size;
-
+  if (typeof color === "string" && color.trim()) body.color = color.trim();
+  if (typeof size === "string" && size.trim()) body.size = size.trim();
   return apiFetch(CART_PRODUCTS_PATH(productId), {
     method: "PATCH",
     body: JSON.stringify(body),
   });
 }
 
-export async function deleteCartProduct({
-  productId,
-  color_id = null,
-  size = null,
-}) {
+export async function deleteCartProduct({ productId, color, size }) {
+  const body = {};
+  if (typeof color === "string" && color.trim()) body.color = color.trim();
+  if (typeof size === "string" && size.trim()) body.size = size.trim();
   return apiFetch(CART_PRODUCTS_PATH(productId), {
     method: "DELETE",
-    body: JSON.stringify({ color_id, size }),
+    body: JSON.stringify(body),
   });
 }
 
