@@ -5,13 +5,14 @@ const BASE_URL = "https://api.redseam.redberryinternship.ge/api";
 const API_LOGIN_PATH = "/login";
 const API_REGISTER_PATH = "/register";
 const PRODUCTS_PATH = "/products";
-const API_CHECKOUT_PATH = "/cart/checkout";
+const CART_PATH = "/cart";
+const CART_PRODUCTS_PATH = (productId) => `/cart/products/${productId}`;
+const CART_CHECKOUT_PATH = "/cart/checkout";
 
 export async function apiFetch(path, options = {}) {
   const session = getSession();
 
   const isFD = options?.body instanceof FormData;
-  // IMPORTANT: Content-Type მხოლოდ მაშინ, როცა body არსებობს და არ არის FormData
   const hasBody = options?.body !== undefined && options?.body !== null;
   const baseHeaders =
     !isFD && hasBody ? { "Content-Type": "application/json" } : {};
@@ -78,7 +79,7 @@ export async function apiFetch(path, options = {}) {
 }
 
 export async function loginUser({ email, password }) {
-  return apiFetch("/login", {
+  return apiFetch(API_LOGIN_PATH, {
     method: "POST",
     body: JSON.stringify({ email, password }),
   });
@@ -114,7 +115,6 @@ function normalizeSort(input) {
 
 export async function fetchProducts({
   page = 1,
-  limit,
   sort,
   min,
   max,
@@ -123,30 +123,76 @@ export async function fetchProducts({
 } = {}) {
   const qs = new URLSearchParams();
   qs.set("page", String(page));
-
   const s = normalizeSort(sort);
   if (s) qs.set("sort", s);
-
   const from = min ?? priceFrom;
   const to = max ?? priceTo;
-  if (from !== undefined && from !== "") {
+  if (from !== undefined && from !== "")
     qs.set("filter[price_from]", String(from));
-  }
-  if (to !== undefined && to !== "") {
-    qs.set("filter[price_to]", String(to));
-  }
+  if (to !== undefined && to !== "") qs.set("filter[price_to]", String(to));
   return apiFetch(`${PRODUCTS_PATH}?${qs.toString()}`, { method: "GET" });
 }
 
-const PRODUCT_BY_ID_PATH = (id) => `/products/${id}`;
+const PRODUCT_BY_ID_PATH = (id) => `${PRODUCTS_PATH}/${id}`;
 
 export async function fetchProductById(id) {
   return apiFetch(PRODUCT_BY_ID_PATH(id), { method: "GET" });
 }
 
-export async function checkoutCart(payload) {
-  return apiFetch(API_CHECKOUT_PATH, {
+export async function fetchCart() {
+  return apiFetch(CART_PATH, { method: "GET" });
+}
+
+export async function addCartProduct({
+  productId,
+  quantity = 1,
+  color_id = null,
+  size = null,
+}) {
+  return apiFetch(CART_PRODUCTS_PATH(productId), {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: JSON.stringify({
+      quantity: Math.max(1, Number(quantity || 1)),
+      color_id,
+      size,
+    }),
+  });
+}
+
+export async function updateCartProduct({
+  productId,
+  quantity,
+  color_id = null,
+  size = null,
+  delta,
+}) {
+  const body = {};
+  if (delta !== undefined) body.delta = Number(delta);
+  if (quantity !== undefined)
+    body.quantity = Math.max(0, Math.floor(Number(quantity)));
+  if (color_id !== undefined) body.color_id = color_id;
+  if (size !== undefined) body.size = size;
+
+  return apiFetch(CART_PRODUCTS_PATH(productId), {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
+}
+
+export async function deleteCartProduct({
+  productId,
+  color_id = null,
+  size = null,
+}) {
+  return apiFetch(CART_PRODUCTS_PATH(productId), {
+    method: "DELETE",
+    body: JSON.stringify({ color_id, size }),
+  });
+}
+
+export async function checkoutCart(payload) {
+  return apiFetch(CART_CHECKOUT_PATH, {
+    method: "POST",
+    body: JSON.stringify(payload || {}),
   });
 }
