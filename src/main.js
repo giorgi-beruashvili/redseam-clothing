@@ -66,10 +66,20 @@ function renderCartBadge() {
   }
 }
 
+function isAuthRoute() {
+  const h = location.hash || "";
+  return h.startsWith("#/login") || h.startsWith("#/register");
+}
+
+function updateHeaderForRoute() {
+  document.body.classList.toggle("body--auth", isAuthRoute());
+}
+
 function onRouteChange() {
   runRouter();
   renderUserDisplay();
   renderCartBadge();
+  updateHeaderForRoute();
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
@@ -82,6 +92,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   setupCartToggle();
   initCartSidebar();
   onRouteChange();
+  updateHeaderForRoute();
 });
 
 window.addEventListener("hashchange", onRouteChange);
