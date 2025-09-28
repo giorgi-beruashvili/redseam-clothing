@@ -23,6 +23,7 @@ body {
   line-height: 1.5;
   color: #0f172a;
   background: #fff;
+  overflow-x: auto;
 }
 
 a {
@@ -49,17 +50,22 @@ svg {
   --container-max: 1920px;
   --border: #e5e7eb;
   --muted: #6b7280;
+  --header-h: 72px;
+  --footer-h: 0px;
 }
 
 .content-1920 {
   width: 1920px;
-  min-height: 1080px;
   margin: 0 auto;
+}
+
+#app {
+  min-height: 1080px;
 }
 
 .view-root {
   padding: 24px;
-  min-height: calc(1080px - 72px);
+  min-height: calc(1080px - var(--header-h) - var(--footer-h));
 }
 
 [hidden] {
@@ -86,6 +92,7 @@ svg {
   display: flex;
   flex-direction: column;
 }
+
 .cart-sidebar[aria-hidden="false"] {
   transform: translateX(0);
 }
@@ -102,6 +109,7 @@ svg {
   justify-content: space-between;
   border-bottom: 1px solid var(--border);
 }
+
 .cart-title {
   font-size: 18px;
   margin: 0;
@@ -142,6 +150,7 @@ svg {
 .summary-list {
   margin: 0;
 }
+
 .summary-list .row {
   display: flex;
   align-items: center;
@@ -149,13 +158,16 @@ svg {
   padding: 6px 0;
   border-top: 1px dashed var(--border);
 }
+
 .summary-list .row:first-child {
   border-top: 0;
 }
+
 .summary-list .row.total dt,
 .summary-list .row.total dd {
   font-weight: 700;
 }
+
 .summary-list dt,
 .summary-list dd {
   margin: 0;
@@ -174,4 +186,36 @@ svg {
 :focus-visible {
   outline: 2px solid #111827;
   outline-offset: 2px;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.bg-cover {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.bg-contain {
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.img-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
