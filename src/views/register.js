@@ -7,6 +7,17 @@ export function renderRegister(root) {
   <section class="auth-card" aria-labelledby="register-title">
     <h1 id="register-title">Registration</h1>
 
+    <div class="form-row">
+        <label for="reg-avatar"></label>
+        <div class="inline">
+          <input id="reg-avatar" name="avatar" type="file" accept="image/jpeg,image/png",image/svg+xml />
+          <img id="reg-preview" class="preview" alt="avatar preview" />
+          <a href="#upload">Upload new</a>
+          <a href="#remove">Remove</a>
+        </div>
+        <div class="error" id="err-avatar"></div>
+      </div>
+
     <form id="register-form" novalidate>
       <div class="form-row">
         <label for="reg-username">Username *</label>
@@ -34,23 +45,13 @@ export function renderRegister(root) {
         <div class="error" id="err-confirm"></div>
       </div>
 
-      <div class="form-row">
-        <label for="reg-avatar">Avatar</label>
-        <div class="inline">
-          <input id="reg-avatar" name="avatar" type="file" accept="image/jpeg,image/png",image/svg+xml />
-          <img id="reg-preview" class="preview" alt="avatar preview" />
-          <a href="#upload">Upload new</a>
-          <a href="#remove">Remove</a>
-        </div>
-        <div class="error" id="err-avatar"></div>
-      </div>
-
       <div class="actions">
         <button class="button" type="submit">Register</button>
-        <a class="button ghost" href="#/login" role="button">Already member? Log in</a>
       </div>
-
-      <div class="form-alert" id="register-alert" role="alert" aria-live="polite"></div>
+      <p> 
+         <a class="button ghost" href="#/login" role="button">Already member? Log in</a>
+      </p>
+      <div class="form-alert" id="register-alert" role="alert" aria-live="polite" hidden></div>
     </form>
   </section>
 `;
