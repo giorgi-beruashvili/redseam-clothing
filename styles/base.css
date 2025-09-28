@@ -73,7 +73,7 @@ svg {
 }
 
 .view-root {
-  padding: 0 100px;
+  padding: 100px;
   min-height: calc(1080px - var(--header-h) - var(--footer-h));
 }
 

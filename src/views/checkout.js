@@ -66,8 +66,10 @@ export function renderCheckout(root) {
         </div>
       </div>
 
+      <h1">Checkout</h1>
+
       <div class="ck-form">
-        <div class="ck-h">Shipping & Contact</div>
+        <div class="ck-h">Order details</div>
         <form id="ck-form" novalidate>
           <div class="grid-2">
             <div class="form-row">
@@ -76,7 +78,7 @@ export function renderCheckout(root) {
               <div class="error" id="err-first"></div>
             </div>
             <div class="form-row">
-              <label for="last">Last name</label>
+              <label for="last">Surname</label>
               <input id="last" name="last" autocomplete="family-name" />
               <div class="error" id="err-last"></div>
             </div>
@@ -93,14 +95,14 @@ export function renderCheckout(root) {
 
           <div class="grid-2">
             <div class="form-row">
-              <label for="zip">ZIP</label>
-              <input id="zip" name="zip" inputmode="numeric" />
-              <div class="error" id="err-zip"></div>
-            </div>
-            <div class="form-row">
               <label for="address">Address</label>
               <input id="address" name="address" autocomplete="street-address" />
               <div class="error" id="err-address"></div>
+            </div>
+            <div class="form-row">
+              <label for="zip">Zip code</label>
+              <input id="zip" name="zip" inputmode="numeric" />
+              <div class="error" id="err-zip"></div>
             </div>
           </div>
 
